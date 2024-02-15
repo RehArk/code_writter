@@ -2,10 +2,14 @@ import { Update } from "./Update";
 
 export class Updates {
 
-    updates : Array<Update>
+    public updates : Array<Update>
 
     constructor(updates : Array<Update>) {
         this.updates = updates;
+    }
+
+    public getAll() : Array<Update> {
+        return this.updates;
     }
 
 }

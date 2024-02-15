@@ -4,40 +4,44 @@ import { AbstractAction } from "./AbstractAction";
 
 export class ActionSwitch extends AbstractAction {
 
-    line;
+    private line;
 
     constructor(line) {
         super();
         this.line = line;
     }
 
-    getStep(update : Update) {
+    public getStep(update : Update) : number {
 
-        const line = update.line;
+        const line = update.getLine();
         const switch_line = this.line;
 
-        return Math.abs(line - switch_line) + 1;
+        return Math.abs(line - switch_line);
     }
 
-    switch_line(code, i, j) {
+
+    public getDuration(code_writter : CodeWritter, update : Update) : number {
+        return this.getStep(update) * code_writter.getActionDelai() - code_writter.getActionDelai();
+    }
+
+    private switch_line(code, i, j) : void {
         let temp = code.lines[i];
         code.lines[i] = code.lines[j];
         code.lines[j] = temp;
     }
 
-    exec(code_writter : CodeWritter, line) : void {
+    public exec(code_writter : CodeWritter, line) : void {
 
         const switch_line = this.line;
-        const delai = code_writter.delai;
         
         if (line < switch_line) {
             for (var i = line; i < switch_line; i++) {
                 const prev = i;
                 const next = i + 1;
                 setTimeout(() => {
-                    this.switch_line(code_writter.code, prev, next);
+                    this.switch_line(code_writter.getCode(), prev, next);
                     this.rebuildCode(code_writter);
-                }, i);
+                }, (i - line) * code_writter.getActionDelai());
             }
         } 
         
@@ -46,9 +50,9 @@ export class ActionSwitch extends AbstractAction {
                 const prev = i;
                 const next = i - 1;
                 setTimeout(() => {
-                    this.switch_line(code_writter.code, prev, next);
+                    this.switch_line(code_writter.getCode(), prev, next);
                     this.rebuildCode(code_writter);
-                }, Math.abs(line - i));
+                }, Math.abs(line - i) * code_writter.getActionDelai());
             }
         }
         

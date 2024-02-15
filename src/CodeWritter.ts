@@ -6,16 +6,30 @@ import { PhpCodeFormatter } from "./formater/PhpCodeFormater";
 
 export class CodeWritter {
 
-    code_container : HTMLElement;
-    code : Code|null;
-    updates : Updates|null;
-    delai : number = 50;
+    private code_container : HTMLElement;
+    private code : Code;
+    private updates : Updates;
+    private writing_delai : number = 50;
+    private action_delai : number = 450;
+
     
     constructor(target : HTMLElement, option : Object) {
-        this.code = null;
-        this.updates = null;
+        this.code = new Code([]);
+        this.updates = new Updates([]);
         this.code_container = target;
-    }  
+    }
+
+    public getWritingDelai() : number {
+        return this.writing_delai;
+    }
+
+    public getActionDelai() : number {
+        return this.action_delai;
+    }
+
+    public getCode() : Code {
+        return this.code;
+    }
 
     public setCode(code_lines : Array<string>) : this {
         this.code = new Code(code_lines);
@@ -33,19 +47,19 @@ export class CodeWritter {
         
         setTimeout(() => {
             this.updateCode();
-        }, this.code?.getDuration(this));
+        }, this.code.getDuration(this) + this.action_delai * 5);
 
     }
 
-    public getCodeContainerLine(line : number) {
+    public getCodeContainerLine(line : number) : Element {
         const code_container = this.code_container;
         const id = code_container.id;
         const line_elem = code_container.querySelector("#" + id + "-line-code-" + line);
-        const code_content = line_elem?.querySelector("." + id + "code-content")
-        return code_content;
+        const code_content = line_elem!.querySelector("." + id + "code-content")
+        return code_content!;
     }
 
-    public writeAnimation(line_elem, text, index = 0) {
+    public writeAnimation(line_elem, text, index = 0) : void {
 
         if(index > text.length - 1) {
             return;
@@ -62,11 +76,11 @@ export class CodeWritter {
 
             self.writeAnimation(line_elem, text, index +1);
             
-        }, this.delai);
+        }, this.writing_delai);
     
     }
 
-    private formatLine(line, code) {
+    private formatLine(line, code) : string {
 
         let id = this.code_container.id;
 
@@ -82,60 +96,54 @@ export class CodeWritter {
 
     }
 
-    private buildCodeContainer() {
+    private buildCodeContainer() : void {
 
-        this.code_container.innerHTML = "";
         let self = this;
         let duration = 0;
+        this.code_container.innerHTML = "";
 
-        for(let index in this.code?.lines) {
+        for(let index in this.code.lines) {
 
-            let line = this.code?.lines[index];
+            let line = this.code.lines[index];
             
             setTimeout(function() {
                 self.code_container.innerHTML += self.formatLine(index, "")
                 const line_elem = self.getCodeContainerLine(index);
-                self.writeAnimation(line_elem, line.code);
+                self.writeAnimation(line_elem, line.getCode());
             }, duration)
             
-            duration += line.getDuration(this.delai);
+            duration += line.getDuration(this.writing_delai);
 
         }
 
     }
 
-    private updateCode(index = 0) {
+    private updateCode(index = 0) : void {
 
-        if(!this.updates) {
+        if(index > this.updates.getAll().length - 1) {
             return;
         }
 
-        if(index > this.updates?.updates.length - 1) {
-            return;
-        }
-
-        const update = this.updates.updates[index]
+        const update = this.updates.getAll()[index]
         update.exec(this);
-
-        const self = this;
 
         setTimeout(() => {
             this.updateCode(index + 1);
-        }, update.getDuration(this));
+        }, update.getDuration(this) + this.action_delai);
 
     }
 
-    public displayCode() {
+    public displayCode() : void {
         
         let self = this;
         this.code_container.innerHTML  = "";
         const code_formatter = new PhpCodeFormatter();
 
-        for(let index in this.code?.lines) {
+        for(let index in this.code.lines) {
             this.code_container.innerHTML += this.formatLine(index, "")
             let line = this.code.lines[index];
             const line_elem = self.getCodeContainerLine(index);
-            line_elem!.innerHTML += code_formatter.addSyntaxColoration(line.code);
+            line_elem!.innerHTML += code_formatter.addSyntaxColoration(line.getCode());
         }
 
     }

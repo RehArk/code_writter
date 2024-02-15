@@ -3,19 +3,23 @@ import { AbstractAction } from "../action/AbstractAction";
 
 export class Update {
 
-    line : number;
-    action : AbstractAction;
+    private line : number;
+    private action : AbstractAction;
 
     constructor(line : number, action : AbstractAction) {
         this.line = line;
         this.action = action;
     }
 
-    exec(code_writter : CodeWritter) {
+    public exec(code_writter : CodeWritter) : void {
         this.action.exec(code_writter, this.line)
     }
 
-    getDuration(code_writter : CodeWritter) {
+    public getLine() : number {
+        return this.line;
+    }
+
+    public getDuration(code_writter : CodeWritter) : number {
         return this.action.getDuration(code_writter, this);
     }
 

@@ -1,10 +1,6 @@
 export class CodeFormatter {
 
-    escapeRegExp(inputString) : string {
-        return inputString.replace(/[\+\*\?\&\|]/g, '\\\$1')
-    }
-
-    addHtmlTag(inputString: string, tempTag : string, htmlTag : string) : string {
+    private addHtmlTag(inputString: string, tempTag : string, htmlTag : string) : string {
 
         const patternStart = new RegExp('\\\\' + tempTag,'g');
         const patternEnd = new RegExp(tempTag + '\\\\', 'g');
@@ -15,39 +11,39 @@ export class CodeFormatter {
         return inputString;
     }
 
-    addKeywordsTags(inputString) {
+    private addKeywordsTags(inputString) : string {
         return this.addHtmlTag(inputString, 'kw', 'keyword');
     }
 
-    addFunctionTags(inputString) {
+    private addFunctionTags(inputString) : string {
         return this.addHtmlTag(inputString, 'fn', 'function');
     }
 
-    addTypeTags(inputString) {
+    private addTypeTags(inputString) : string {
         return this.addHtmlTag(inputString, 'typ', 'type');
     }
 
-    addVariableTags(inputString) {
+    private addVariableTags(inputString) : string {
         return this.addHtmlTag(inputString, 'var', 'variable');
     }
 
-    addStringTags(inputString) {
+    private addStringTags(inputString) : string {
         return this.addHtmlTag(inputString, 'str', 'string');
     }
 
-    addNumberTags(inputString) {
+    private addNumberTags(inputString) : string {
         return this.addHtmlTag(inputString, 'num', 'number');
     }
 
-    addCommentsTags(inputString) {
+    private addCommentsTags(inputString) : string {
         return this.addHtmlTag(inputString, 'com', 'comment');
     }
 
-    addOperatorTags(inputString) {
+    private addOperatorTags(inputString) : string {
         return this.addHtmlTag(inputString, 'op', 'operator');
     }
 
-    addSyntaxColoration(inputString) {
+    public addSyntaxColoration(inputString) : string {
 
         let formatedString = inputString;
 

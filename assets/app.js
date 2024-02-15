@@ -5,8 +5,11 @@
     constructor(code2) {
       this.code = code2;
     }
+    getCode() {
+      return this.code;
+    }
     getDuration(delai) {
-      return delai * this.code.length + delai;
+      return delai * this.code.length;
     }
   };
 
@@ -23,7 +26,7 @@
     getDuration(caller) {
       let duration = 0;
       for (let line of this.lines) {
-        duration += line.getDuration(caller.delai) + caller.delai;
+        duration += line.getDuration(caller.getWritingDelai());
       }
       return duration;
     }
@@ -35,13 +38,13 @@
     constructor(updates2) {
       this.updates = updates2;
     }
+    getAll() {
+      return this.updates;
+    }
   };
 
   // src/formater/CodeFormater.ts
   var CodeFormatter = class {
-    escapeRegExp(inputString) {
-      return inputString.replace(/[\+\*\?\&\|]/g, "\\$1");
-    }
     addHtmlTag(inputString, tempTag, htmlTag) {
       const patternStart = new RegExp("\\\\" + tempTag, "g");
       const patternEnd = new RegExp(tempTag + "\\\\", "g");
@@ -235,11 +238,21 @@
     code_container;
     code;
     updates;
-    delai = 50;
+    writing_delai = 50;
+    action_delai = 450;
     constructor(target, option) {
-      this.code = null;
-      this.updates = null;
+      this.code = new Code([]);
+      this.updates = new Updates([]);
       this.code_container = target;
+    }
+    getWritingDelai() {
+      return this.writing_delai;
+    }
+    getActionDelai() {
+      return this.action_delai;
+    }
+    getCode() {
+      return this.code;
     }
     setCode(code_lines) {
       this.code = new Code(code_lines);
@@ -253,13 +266,13 @@
       this.buildCodeContainer();
       setTimeout(() => {
         this.updateCode();
-      }, this.code?.getDuration(this));
+      }, this.code.getDuration(this) + this.action_delai * 5);
     }
     getCodeContainerLine(line) {
       const code_container = this.code_container;
       const id = code_container.id;
       const line_elem = code_container.querySelector("#" + id + "-line-code-" + line);
-      const code_content = line_elem?.querySelector("." + id + "code-content");
+      const code_content = line_elem.querySelector("." + id + "code-content");
       return code_content;
     }
     writeAnimation(line_elem, text, index = 0) {
@@ -272,7 +285,7 @@
         const char = text[index];
         line_elem.innerHTML = code_formatter.addSyntaxColoration(line_elem.innerHTML + char);
         self.writeAnimation(line_elem, text, index + 1);
-      }, this.delai);
+      }, this.writing_delai);
     }
     formatLine(line, code2) {
       let id = this.code_container.id;
@@ -283,59 +296,55 @@
       return line;
     }
     buildCodeContainer() {
-      this.code_container.innerHTML = "";
       let self = this;
       let duration = 0;
-      for (let index in this.code?.lines) {
-        let line = this.code?.lines[index];
+      this.code_container.innerHTML = "";
+      for (let index in this.code.lines) {
+        let line = this.code.lines[index];
         setTimeout(function() {
           self.code_container.innerHTML += self.formatLine(index, "");
           const line_elem = self.getCodeContainerLine(index);
-          self.writeAnimation(line_elem, line.code);
+          self.writeAnimation(line_elem, line.getCode());
         }, duration);
-        duration += line.getDuration(this.delai);
+        duration += line.getDuration(this.writing_delai);
       }
     }
     updateCode(index = 0) {
-      if (!this.updates) {
+      if (index > this.updates.getAll().length - 1) {
         return;
       }
-      if (index > this.updates?.updates.length - 1) {
-        return;
-      }
-      const update = this.updates.updates[index];
+      const update = this.updates.getAll()[index];
       update.exec(this);
-      const self = this;
       setTimeout(() => {
         this.updateCode(index + 1);
-      }, update.getDuration(this));
+      }, update.getDuration(this) + this.action_delai);
     }
     displayCode() {
       let self = this;
       this.code_container.innerHTML = "";
       const code_formatter = new PhpCodeFormatter();
-      for (let index in this.code?.lines) {
+      for (let index in this.code.lines) {
         this.code_container.innerHTML += this.formatLine(index, "");
         let line = this.code.lines[index];
         const line_elem = self.getCodeContainerLine(index);
-        line_elem.innerHTML += code_formatter.addSyntaxColoration(line.code);
+        line_elem.innerHTML += code_formatter.addSyntaxColoration(line.getCode());
       }
     }
   };
 
   // src/action/AbstractAction.ts
   var AbstractAction = class {
-    getCodeContainer(code_writter, line) {
-      return code_writter.getCodeContainerLine(line);
-    }
     getStep(update) {
       return 1;
     }
     getDuration(code_writter, update) {
-      return this.getStep(update) * code_writter.delai + code_writter.delai;
+      return this.getStep(update) * code_writter.getWritingDelai();
     }
     exec(code_writter, line) {
       throw "Not implemented yet !";
+    }
+    getCodeContainer(code_writter, line) {
+      return code_writter.getCodeContainerLine(line);
     }
     rebuildCode(code_writter) {
       code_writter.displayCode();
@@ -357,10 +366,10 @@
       return this.code.length;
     }
     exec(code_writter, line) {
-      code_writter.code.lines.splice(line, 0, new Line(""));
+      code_writter.getCode().lines.splice(line, 0, new Line(""));
       this.rebuildCode(code_writter);
-      code_writter.code.lines[line] = new Line(this.code);
       const line_elem = this.getCodeContainer(code_writter, line);
+      code_writter.getCode().lines[line] = new Line(this.code);
       code_writter.writeAnimation(line_elem, this.code);
     }
   };
@@ -368,7 +377,7 @@
   // src/action/ActionRemove.ts
   var ActionRemove = class extends AbstractAction {
     exec(code_container, line) {
-      code_container.code.lines.splice(line, 1);
+      code_container.getCode().lines.splice(line, 1);
       this.rebuildCode(code_container);
     }
   };
@@ -381,12 +390,9 @@
       this.code = code2;
     }
     exec(code_container, line) {
-      code_container.code.lines[line] = new Line(this.code);
+      code_container.getCode().lines[line] = new Line(this.code);
       const line_elem = code_container.getCodeContainerLine(line);
       this.replaceCode(line_elem, this.code);
-    }
-    getDuration(code_writter, update) {
-      return this.getStep(update) * code_writter.delai + code_writter.delai;
     }
   };
 
@@ -398,9 +404,12 @@
       this.line = line;
     }
     getStep(update) {
-      const line = update.line;
+      const line = update.getLine();
       const switch_line = this.line;
-      return Math.abs(line - switch_line) + 1;
+      return Math.abs(line - switch_line);
+    }
+    getDuration(code_writter, update) {
+      return this.getStep(update) * code_writter.getActionDelai() - code_writter.getActionDelai();
     }
     switch_line(code2, i, j) {
       let temp = code2.lines[i];
@@ -409,15 +418,14 @@
     }
     exec(code_writter, line) {
       const switch_line = this.line;
-      const delai = code_writter.delai;
       if (line < switch_line) {
         for (var i = line; i < switch_line; i++) {
           const prev = i;
           const next = i + 1;
           setTimeout(() => {
-            this.switch_line(code_writter.code, prev, next);
+            this.switch_line(code_writter.getCode(), prev, next);
             this.rebuildCode(code_writter);
-          }, i);
+          }, (i - line) * code_writter.getActionDelai());
         }
       }
       if (line > switch_line) {
@@ -425,9 +433,9 @@
           const prev = i;
           const next = i - 1;
           setTimeout(() => {
-            this.switch_line(code_writter.code, prev, next);
+            this.switch_line(code_writter.getCode(), prev, next);
             this.rebuildCode(code_writter);
-          }, Math.abs(line - i));
+          }, Math.abs(line - i) * code_writter.getActionDelai());
         }
       }
     }
@@ -444,6 +452,9 @@
     exec(code_writter) {
       this.action.exec(code_writter, this.line);
     }
+    getLine() {
+      return this.line;
+    }
     getDuration(code_writter) {
       return this.action.getDuration(code_writter, this);
     }
@@ -452,14 +463,14 @@
   // src/app.ts
   var code = [
     "// refactoring",
-    "if($var_1 == 1) {",
+    "if($var == 1) {",
     '   echo "PLOP";',
     "} else {",
     '   throw "AHHHHHH !!!";',
     "}"
   ];
   var updates = [
-    new Update(1, new ActionReplace("if($var_1 != 1) {")),
+    new Update(1, new ActionReplace("if($var != 1) {")),
     new Update(3, new ActionReplace("}")),
     new Update(5, new ActionRemove()),
     new Update(2, new ActionSwitch(3)),

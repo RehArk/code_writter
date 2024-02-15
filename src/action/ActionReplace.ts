@@ -5,7 +5,7 @@ import { AbstractAction } from "./AbstractAction";
 
 export class ActionReplace extends AbstractAction {
 
-    code : string;
+    private code : string;
 
     constructor(code : string) {
         super();
@@ -13,13 +13,9 @@ export class ActionReplace extends AbstractAction {
     }
 
     public exec(code_container : CodeWritter, line : number) : void {
-        code_container.code!.lines[line] = new Line(this.code);
+        code_container.getCode().lines[line] = new Line(this.code);
         const line_elem = code_container.getCodeContainerLine(line);
         this.replaceCode(line_elem, this.code);
-    }
-
-    getDuration(code_writter : CodeWritter, update : Update) {
-        return this.getStep(update) * code_writter.delai + code_writter.delai;
     }
     
 }

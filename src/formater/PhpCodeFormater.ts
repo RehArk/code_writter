@@ -14,15 +14,15 @@ export class PhpCodeFormatter {
         return this.getStartTag(tag) + match + this.getEndTag(tag)
     }
 
-    removeHtmlTags(inputString) {
+    private removeHtmlTags(inputString) : string {
         return inputString.replace(/<[^>]*>/g, '');
     }
 
-    escapeRegExp(inputString) : string {
+    private escapeRegExp(inputString) : string {
         return inputString.replace(/[.*+?^${}()\|\[\]\\]/g, '\\$&');
     }
 
-    addKeywordsTags(inputString) {
+    private addKeywordsTags(inputString) : string {
         
         const self = this;
         var keywords = [
@@ -44,7 +44,7 @@ export class PhpCodeFormatter {
         
     }
 
-    addFunctionTags(inputString) {
+    private addFunctionTags(inputString) : string {
 
         const self = this;
         const pattern = /([\w+]{1,}[ ]{0,}[(])/g;
@@ -67,7 +67,7 @@ export class PhpCodeFormatter {
         return inputString;
     }
 
-    addTypeTags(inputString) {
+    private addTypeTags(inputString) : string {
 
         const self = this;
         var types = ['int', 'float', 'string', 'bool', 'void'];
@@ -82,7 +82,7 @@ export class PhpCodeFormatter {
         return inputString;
     }
 
-    addVariableTags(inputString) {
+    private addVariableTags(inputString) : string {
 
         const self = this;
         const pattern = /([$]{1,2}[\w+]*)/g;
@@ -92,7 +92,7 @@ export class PhpCodeFormatter {
         });
     }
 
-    addStringTags(inputString) {
+    private addStringTags(inputString) : string {
 
         const self = this;
         const pattern = /('[^']*'|"[^"]*")/g;
@@ -102,7 +102,7 @@ export class PhpCodeFormatter {
         });
     }
 
-    addNumberTags(inputString) {
+    private addNumberTags(inputString) : string {
 
         const self = this;
         const pattern = /(?<![\w])([+-]?([0-9]*[.|,])?[0-9]+)/g;
@@ -112,7 +112,7 @@ export class PhpCodeFormatter {
         });
     }
 
-    addCommentsTags(inputString) {
+    private addCommentsTags(inputString) : string {
 
         const self = this;
         const pattern = /(\/\/.*)/g;
@@ -122,7 +122,7 @@ export class PhpCodeFormatter {
         });
     }
 
-    addOperatorTags(inputString) {
+    private addOperatorTags(inputString) : string {
 
         const self = this;
         var operators = [
@@ -144,7 +144,7 @@ export class PhpCodeFormatter {
 
     }
 
-    addSyntaxColoration(inputString) {
+    public addSyntaxColoration(inputString) : string {
 
         let formatedString = this.removeHtmlTags(inputString);
 

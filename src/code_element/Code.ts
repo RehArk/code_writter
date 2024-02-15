@@ -3,7 +3,7 @@ import { Line } from "./Line";
 
 export class Code {
 
-    lines : Array<Line>;
+    public lines : Array<Line>;
 
     constructor(code : Array<string>) {
 
@@ -16,12 +16,12 @@ export class Code {
 
     }
 
-    getDuration(caller : CodeWritter) : number {
+    public getDuration(caller : CodeWritter) : number {
 
         let duration = 0;
 
         for(let line of this.lines) {
-            duration += line.getDuration(caller.delai) + caller.delai;
+            duration += line.getDuration(caller.getWritingDelai());
         }
 
         return duration;

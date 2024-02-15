@@ -1,13 +1,17 @@
 export class Line {
 
-    code : string;
+    private code : string;
 
     constructor(code : string) {
         this.code = code;
     }
 
-    getDuration(delai : number) : number {
-        return delai * this.code.length + delai;
+    public getCode() : string {
+        return this.code;
+    }
+
+    public getDuration(delai : number) : number {
+        return delai * this.code.length;
     }
 
 }
