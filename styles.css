@@ -1,0 +1,32 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+ul, ol {
+  list-style: none !important;
+  list-style-type: none !important;
+}
+
+#refactoring-animation {
+  font-family: monospace;
+  white-space: pre-wrap;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: black;
+  color: white;
+}
+
+.separator {
+  margin: 0px 15px 0px 5px;
+  border-right:1px solid white;
+}
+
+keyword { color: #ff4646; }
+function { color: #4edc64; }
+type { color: #4ec1c9; }
+variable { color: #3992c2; }
+string { color: #ebae54; }
+number { color: #b5cea8; }
+comment { color: #87ae75; }
+operator { color: #131111; }
