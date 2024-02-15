@@ -8,7 +8,7 @@ You could use it like this :
 $codeWritter = new CodeWritter();
 $codeWritter
     .setCode("echo \"Hello World\"")
-    .setUpdates(new Update(0, new ActionReplace("echo \"Hello World !\"")))
+    .setUpdates([new Update(0, new ActionReplace("echo \"Hello World !\""))])
     .run()
 ;
 ```
