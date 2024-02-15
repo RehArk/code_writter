@@ -299,15 +299,14 @@
       let self = this;
       let duration = 0;
       this.code_container.innerHTML = "";
-      for (let index in this.code.lines) {
-        let line = this.code.lines[index];
+      this.code.lines.forEach((line, index) => {
         setTimeout(function() {
           self.code_container.innerHTML += self.formatLine(index, "");
           const line_elem = self.getCodeContainerLine(index);
           self.writeAnimation(line_elem, line.getCode());
         }, duration);
         duration += line.getDuration(this.writing_delai);
-      }
+      });
     }
     updateCode(index = 0) {
       if (index > this.updates.getAll().length - 1) {
@@ -323,12 +322,11 @@
       let self = this;
       this.code_container.innerHTML = "";
       const code_formatter = new PhpCodeFormatter();
-      for (let index in this.code.lines) {
+      this.code.lines.forEach((line, index) => {
         this.code_container.innerHTML += this.formatLine(index, "");
-        let line = this.code.lines[index];
         const line_elem = self.getCodeContainerLine(index);
         line_elem.innerHTML += code_formatter.addSyntaxColoration(line.getCode());
-      }
+      });
     }
   };
 
