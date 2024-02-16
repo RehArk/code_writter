@@ -23,10 +23,10 @@
         this.lines.push(line);
       }
     }
-    getDuration(caller) {
+    getDuration(writing_delai) {
       let duration = 0;
       for (let line of this.lines) {
-        duration += line.getDuration(caller.getWritingDelai());
+        duration += line.getDuration(writing_delai);
       }
       return duration;
     }
@@ -266,7 +266,7 @@
       this.buildCodeContainer();
       setTimeout(() => {
         this.updateCode();
-      }, this.code.getDuration(this) + this.action_delai * 5);
+      }, this.code.getDuration(this.writing_delai) + this.action_delai * 5);
     }
     getCodeContainerLine(line) {
       const code_container = this.code_container;

@@ -1,12 +1,13 @@
 import { CodeWritter } from "../CodeWritter";
+import { Code } from "../code_element/Code";
 import { Update } from "../code_element/Update";
 import { AbstractAction } from "./AbstractAction";
 
 export class ActionSwitch extends AbstractAction {
 
-    private line;
+    private line : number;
 
-    constructor(line) {
+    constructor(line : number) {
         super();
         this.line = line;
     }
@@ -21,10 +22,10 @@ export class ActionSwitch extends AbstractAction {
 
 
     public getDuration(code_writter : CodeWritter, update : Update) : number {
-        return this.getStep(update) * code_writter.getActionDelai() - code_writter.getActionDelai();
+        return this.getStep(update) * code_writter.getActionDelai();
     }
 
-    private switch_line(code, i, j) : void {
+    private switch_line(code : Code, i : number, j : number) : void {
         let temp = code.lines[i];
         code.lines[i] = code.lines[j];
         code.lines[j] = temp;

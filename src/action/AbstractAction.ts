@@ -2,10 +2,10 @@ import { CodeWritter } from "../CodeWritter";
 import { Update } from "../code_element/Update";
 import { PhpCodeFormatter } from "../formater/PhpCodeFormater";
 
-export class AbstractAction {
+export abstract class AbstractAction {
 
     public getStep(update : Update) : number {
-        return 1;
+        return 0;
     }
 
     public getDuration(code_writter : CodeWritter, update : Update) : number {

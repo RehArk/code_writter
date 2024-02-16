@@ -19,6 +19,10 @@ export class Update {
         return this.line;
     }
 
+    public getAction() {
+        return this.action;
+    }
+
     public getDuration(code_writter : CodeWritter) : number {
         return this.action.getDuration(code_writter, this);
     }

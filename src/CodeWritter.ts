@@ -1,5 +1,5 @@
-import { Update } from "./code_element/Update";
 import { Code } from "./code_element/Code";
+import { Update } from "./code_element/Update";
 import { Updates } from "./code_element/Updates";
 import { PhpCodeFormatter } from "./formater/PhpCodeFormater";
 
@@ -47,7 +47,7 @@ export class CodeWritter {
         
         setTimeout(() => {
             this.updateCode();
-        }, this.code.getDuration(this) + this.action_delai * 5);
+        }, this.code.getDuration(this.writing_delai) + this.action_delai * 5);
 
     }
 
